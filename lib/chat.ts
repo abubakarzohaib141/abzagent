@@ -1,4 +1,3 @@
-// src/lib/chat.ts
 import type { Message } from "@/types/chat";
 
 export async function sendChat(messages: Message[]) {
@@ -9,9 +8,12 @@ export async function sendChat(messages: Message[]) {
   });
 
   if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data?.detail || "Chat request failed");
+    let err = "Chat request failed";
+    try {
+      const data = await res.json();
+      err = data?.error || data?.detail || err;
+    } catch {}
+    throw new Error(err);
   }
-
   return res.json();
 }
